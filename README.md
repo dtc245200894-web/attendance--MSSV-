@@ -38,6 +38,7 @@ docker compose ps
 - phpMyAdmin: http://localhost:8081
 - Grafana: http://localhost:3000 (tài khoản `admin`, mật khẩu `GRAFANA_ADMIN_PASSWORD`)
 - Prometheus: http://localhost:9090
+- Loki được truy cập nội bộ qua Grafana Explore; không mở cổng trực tiếp trên host.
 - Database: `attendance_db`
 
 Đăng nhập phpMyAdmin bằng username `attendance_app` và mật khẩu đặt trong `.env`.
@@ -76,6 +77,18 @@ Prometheus thu metrics từ cAdvisor (container), Nginx Exporter (web server) v�
 
 Các cổng monitoring chỉ bind vào loopback của máy host.
 
+## Thu thập log bằng Loki và Promtail
+
+Promtail phát hiện các container Docker và gửi log ứng dụng/hạ tầng tới Loki (không thu thập log nội bộ của Loki và Promtail). Promtail cần truy cập Docker socket để phát hiện container và log; dịch vụ Loki không mở cổng trực tiếp trên host. Trong Grafana, mở **Explore**, chọn datasource **Loki**, rồi thử:
+
+```logql
+{service="nginx"}
+{service="app"}
+{service="nginx"} |= " 200 "
+```
+
+Loki giữ dữ liệu log trong volume `loki_data` với thời gian lưu cấu hình là 7 ngày. Promtail lưu vị trí đọc trong volume `promtail_positions` để tiếp tục thu thập sau khi container khởi động lại.
+
 ## Trạng thái hiện tại
 
-Ứng dụng có đăng nhập giảng viên, quản lý lớp và sinh viên, tạo buổi học, ghi nhận điểm danh và dữ liệu demo; chạy cùng MySQL, phpMyAdmin, Nginx reverse proxy và cấu hình monitoring Prometheus/Grafana. Loki/Promtail và hardening còn lại sẽ được bổ sung tiếp.
+Ứng dụng có đăng nhập giảng viên, đổi mật khẩu, quản lý lớp và sinh viên, tạo buổi học, ghi nhận điểm danh và dữ liệu demo; chạy cùng MySQL, phpMyAdmin, Nginx reverse proxy, Prometheus/Grafana và Loki/Promtail. Hardening còn lại sẽ được bổ sung tiếp.

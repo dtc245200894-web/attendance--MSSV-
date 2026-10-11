@@ -259,6 +259,7 @@ function escapeHtml(string $value): string
             <a href="/classes.php">Quản lý lớp</a>
             <a href="/students.php" aria-current="page">Quản lý sinh viên</a>
             <a href="/attendance.php">Buổi học / Điểm danh</a>
+            <a href="/change-password.php">Đổi mật khẩu</a>
             <div class="sidebar-account">
                 <span class="sidebar-avatar">GV</span>
                 <span class="sidebar-user">
